@@ -14,18 +14,21 @@
     </header>
 
     <!-- row has already display set to flex -->
-    <div class="row text-center  align-items-center">
+    <div class="row text-center mb-5 align-items-center">
         <div class="col-12">
             <h3>Our Most Popular Campgrounds</h3>
         </div>
 
         <% campgrounds.forEach(campground => { %>
-        <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="col-lg-3 col-md-4 col-sm-6 ">
             <div class="img-thumbnail">
                 <img class="w-100" src="<%= campground.image %> " alt="image">
-                <div>
+                <div class="my-2">
                     <strong><%= campground.name %></strong>
                 </div>
+                <p>
+                    <a href="/campgrounds/<%= campground._id %>" class="btn btn-primary">More Info</a>
+                </p>
             </div>
         </div>
         <% }) %>
