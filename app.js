@@ -7,7 +7,7 @@ const Comment = require("./models/comment")
 const seedDB = require("./seed")
 
 //Seeding the database
-//seedDB();
+seedDB();
 
 //Connecting DB
 mongoose.connect('mongodb://localhost:27017/YelpCamp', {

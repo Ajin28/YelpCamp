@@ -84,7 +84,53 @@ function seedDB() {
             })
         }
     });
+}
+
+
+//Using Promises
+function seedDBpromise() {
+    Campground.deleteMany().exec()
+        .then(() => { console.log("Deleted all Campgrounds") })
+        .then(() => { return Comment.deleteMany().exec() })
+        .then(() => { console.log("Deleted all Comments") })
+        .then(() => {
+            let campgroundsPromise = [];
+            data.forEach(function (seed) {
+                campgroundsPromise.push(Campground.create(seed));
+            })
+            return Promise.all(campgroundsPromise);
+        })
+        .then((campgrounds) => {
+            console.log("Added all Campgrounds");
+            let commentPromise = [];
+            campgrounds.forEach(function (campground) {
+                commentPromise.push(
+                    Comment.create({
+                        text: "This place is great, but i wish there was internet",
+                        author: "Kiwi"
+                    }).then((comment) => {
+                        campground.comments.push(comment);
+                        return campground.save();
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                );
+
+            });
+
+            return Promise.all(commentPromise)
+
+        })
+        .then((data) => {
+            //console.log(data)
+            console.log("It worked!!!!!!!!!!!!!!!")
+        })
+        .catch((err) => {
+            console.log("ooppsss" + err);
+        })
+
 
 }
-module.exports = seedDB;
+module.exports = seedDBpromise;
+
 
