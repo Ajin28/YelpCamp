@@ -1,4 +1,4 @@
-<%- include("partials/header")  %>
+<%- include("../partials/header")  %>
 <h1><%= campground.name  %> </h1>
 <img src="<%= campground.image %> " alt="">
 <p><%= campground.description  %> </p>
@@ -6,4 +6,5 @@
 <% campground.comments.forEach(comment => { %>
 <p><%= comment.author %> - <%= comment.text %> </p>
 <% }) %>
-<%- include("partials/footer")  %>
+<a href="/campgrounds/<%= campground._id %>/comments/new">Add Comment</a>
+<%- include("../partials/footer")  %>

@@ -32,7 +32,7 @@ app.get("/campgrounds", (req, res) => {
             console.log(err);
         }
         else {
-            res.render("index", { campgrounds });
+            res.render("campgrounds/index", { campgrounds });
         }
     })
 
@@ -58,7 +58,7 @@ app.post("/campgrounds", (req, res) => {
 
 //NEW 
 app.get("/campgrounds/new", (req, res) => {
-    res.render("new");
+    res.render("campgrounds/new");
 });
 
 //SHOW
@@ -67,10 +67,22 @@ app.get("/campgrounds/:id", function (req, res) {
         if (err) {
             console.log(err);
         } else {
-            res.render("show", { campground: foundCampground })
+            res.render("campgrounds/show", { campground: foundCampground })
         }
     })
 })
+
+//NEW Comment
+app.get("/campgrounds/:id/comments/new", function (req, res) {
+    Campground.findById(req.params.id, function (err, foundCampground) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render("comments/new", { campground: foundCampground })
+        }
+    })
+})
+
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("YelpCamp Server has started");
