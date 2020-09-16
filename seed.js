@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
 const Campground = require("./models/campground")
-const Comment = require("./models/comment")
-var data = [
+const Comment = require("./models/comment");
+
+let comment = {
+    text: "This place is great, but i wish there was internet",
+    author: "Kiwi"
+}
+
+var seeds = [
     {
 
         name: "Lake Mantade",
@@ -24,59 +30,53 @@ var data = [
     {
         name: "Cloud's Rest",
         image: "https://farm4.staticflickr.com/3795/10131087094_c1c0a1c859.jpg",
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
+        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupiseedst non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
     },
     {
         name: "Desert Mesa",
         image: "https://farm6.staticflickr.com/5487/11519019346_f66401b6c1.jpg",
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
+        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupiseedst non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
     },
     {
         name: "Canyon Floor",
         image: "https://farm1.staticflickr.com/189/493046463_841a18169e.jpg",
-        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
+        description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupiseedst non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"
     }
 ]
 
 //CALLBACK HELL
 function seedDB() {
-    Campground.deleteMany({}, function (err) {
+    Campground.deleteMany({}, function (err, emptyCampgrounds) {
         //First Callback : Removing all Campgrounds
         if (err) {
             console.log(err)
         }
         else {
-            console.log("removed all campgrounds");
-            Comment.deleteMany({}, function (err) {
+            console.log(emptyCampgrounds);
+            Comment.deleteMany({}, function (err, emptyComments) {
                 //Second Callback: Removing all Comments
                 if (err) {
                     console.log(err);
                 }
                 else {
-                    console.log("removed all comments!");
-                    console.log("Now adding Campgrounds");
-                    data.forEach(function (seed) {
+                    console.log(emptyComments);
+                    seeds.forEach(function (seed) {
                         Campground.create(seed, function (err, campground) {
                             //Third Callback : Adding a Campground
                             if (err) {
                                 console.log(err)
                             } else {
-                                console.log("Added new Campground")
-                                Comment.create(
-                                    {
-                                        text: "This place is great, but i wish there was internet",
-                                        author: "Kiwi"
-                                    }, function (err, comment) {
-                                        // Fourth Callback : Adding comment on a Campground 
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            campground.comments.push(comment);
-                                            campground.save();
-                                            console.log("Added new Comment")
-                                        }
+                                console.log("Campground created-----\n" + campground)
+                                Comment.create(comment, function (err, comment) {
+                                    // Fourth Callback : Adding comment on a Campground 
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log("Comment created-----\n" + comment)
+                                        campground.comments.push(comment);
+                                        campground.save();
                                     }
-                                )
+                                })
                             }
                         })
                     })
@@ -87,50 +87,68 @@ function seedDB() {
 }
 
 
-//Using Promises
+//=======================================================Using Promises================================
 function seedDBpromise() {
     Campground.deleteMany().exec()
-        .then(() => { console.log("Deleted all Campgrounds") })
-        .then(() => { return Comment.deleteMany().exec() })
-        .then(() => { console.log("Deleted all Comments") })
-        .then(() => {
-            let campgroundsPromise = [];
-            data.forEach(function (seed) {
-                campgroundsPromise.push(Campground.create(seed));
-            })
-            return Promise.all(campgroundsPromise);
+        .then((emptyCampgrounds) => {
+            console.log(emptyCampgrounds);
+            return Comment.deleteMany().exec()
         })
-        .then((campgrounds) => {
-            console.log("Added all Campgrounds");
-            let commentPromise = [];
-            campgrounds.forEach(function (campground) {
-                commentPromise.push(
-                    Comment.create({
-                        text: "This place is great, but i wish there was internet",
-                        author: "Kiwi"
-                    }).then((comment) => {
-                        campground.comments.push(comment);
-                        return campground.save();
-                    }).catch(err => {
-                        console.log(err);
-                    })
-                );
+        .then((emptyComments) => {
+            console.log(emptyComments);
 
-            });
+            for (const seed of seeds) {
+                let addedCampground;
+                Campground.create(seed).then((campground) => {
+                    console.log("Campground created-----\n" + campground);
+                    addedCampground = campground;
+                    return Comment.create(comment)
+                }).then((comment) => {
+                    console.log("Comment created-----\n" + comment)
+                    addedCampground.comments.push(comment);
+                    return addedCampground.save()
+                }).then((completeCampground) => {
+                    console.log("Comment added to Campground-----\n" + completeCampground);
+                }).catch(err => {
+                    console.log(err);
+                })
+            }
 
-            return Promise.all(commentPromise)
-
-        })
-        .then((data) => {
-            //console.log(data)
-            console.log("It worked!!!!!!!!!!!!!!!")
         })
         .catch((err) => {
-            console.log("ooppsss" + err);
+            console.log(err);
         })
+}
 
+
+//================================================================Using async/await===================================
+async function seedDBaa() {
+    try {
+        let emptyCampgrounds = await Campground.deleteMany().exec();
+        console.log(emptyCampgrounds);
+        let emptyComments = await Comment.deleteMany().exec();
+        console.log(emptyComments);
+
+        for (const seed of seeds) {
+            let addedCampground = await Campground.create(seed);
+            console.log("Campground created-----\n" + addedCampground);
+
+            let addedComment = await Comment.create(comment);
+            console.log("Comment created-----\n" + addedComment);
+
+            addedCampground.comments.push(addedComment);
+            let completeCampground = await addedCampground.save();
+            console.log("Comment added to Campground------\n" + completeCampground);
+        }
+        console.log("It worked!!!!!!!")
+    }
+    catch (err) {
+        console.log(err);
+    }
 
 }
-module.exports = seedDBpromise;
 
+
+
+module.exports = seedDBaa;
 
