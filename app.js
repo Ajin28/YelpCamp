@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require("mongoose");
 const Campground = require("./models/campground");
+const Comment = require("./models/comment")
 const seedDB = require("./seed")
 
 //Seeding the database
@@ -79,6 +80,28 @@ app.get("/campgrounds/:id/comments/new", function (req, res) {
             console.log(err);
         } else {
             res.render("comments/new", { campground: foundCampground })
+        }
+    })
+})
+
+//CREATE Comment
+app.post("/campgrounds/:id/comments", function (req, res) {
+    let comment = req.body.comment;
+    Campground.findById(req.params.id, function (err, campground) {
+        if (err) {
+            console.log(err);
+            res.redirect("/campgrounds")
+        } else {
+            Comment.create(comment, function (err, savedComment) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    campground.comments.push(savedComment)
+                    campground.save();
+                    res.redirect("/campgrounds/" + req.params.id)
+
+                }
+            })
         }
     })
 })
