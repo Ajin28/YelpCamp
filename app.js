@@ -19,24 +19,7 @@ mongoose.connect('mongodb://localhost:27017/YelpCamp', {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
-// //Adding campgrounds
-// Campground.create(
-//     {
-//         name: "Lake Mantade",
-//         image: "https://images.unsplash.com/photo-1537905569824-f89f14cceb68?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60",
-//         description: "A beautiful lake surrounded by trees and native flora.Good place for bird watching and camping enthusiasts"
-//     },
-
-//     function (err, res) {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             console.log(res);
-//         }
-//     }
-// )
-
-
+//------ROUTES
 app.get("/", (req, res) => {
     res.render("landing");
 });
@@ -80,12 +63,11 @@ app.get("/campgrounds/new", (req, res) => {
 
 //SHOW
 app.get("/campgrounds/:id", function (req, res) {
-    Campground.findById(req.params.id, function (err, foundCampground) {
+    Campground.findById(req.params.id).populate("comments").exec(function (err, foundCampground) {
         if (err) {
             console.log(err);
         } else {
             res.render("show", { campground: foundCampground })
-
         }
     })
 })
