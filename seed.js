@@ -129,17 +129,17 @@ async function seedDBaa() {
         let emptyComments = await Comment.deleteMany().exec();
         console.log(emptyComments);
 
-        for (const seed of seeds) {
-            let addedCampground = await Campground.create(seed);
-            console.log("Campground created-----\n" + addedCampground);
+        // for (const seed of seeds) {
+        //     let addedCampground = await Campground.create(seed);
+        //     console.log("Campground created-----\n" + addedCampground);
 
-            let addedComment = await Comment.create(comment);
-            console.log("Comment created-----\n" + addedComment);
+        //     let addedComment = await Comment.create(comment);
+        //     console.log("Comment created-----\n" + addedComment);
 
-            addedCampground.comments.push(addedComment);
-            let completeCampground = await addedCampground.save();
-            console.log("Comment added to Campground------\n" + completeCampground);
-        }
+        //     addedCampground.comments.push(addedComment);
+        //     let completeCampground = await addedCampground.save();
+        //     console.log("Comment added to Campground------\n" + completeCampground);
+        // }
         console.log("It worked!!!!!!!")
     }
     catch (err) {

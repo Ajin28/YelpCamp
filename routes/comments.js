@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 //this will merge the params from app.js url and here so we can access id
 const Campground = require("../models/campground");
-const Comment = require("../models/comment")
+const Comment = require("../models/comment");
+const User = require('../models/user');
 
 
 //NEW Comment
@@ -28,8 +29,13 @@ router.post("/", function (req, res) {
                 if (err) {
                     console.log(err);
                 } else {
+                    savedComment.author.id = req.user._id;
+                    savedComment.author.username = req.user.username;
+                    savedComment.save();
                     campground.comments.push(savedComment)
                     campground.save();
+                    //console.log(savedComment);
+                    //console.log(req.user);
                     res.redirect("/campgrounds/" + req.params.id)
 
                 }

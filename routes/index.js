@@ -15,7 +15,7 @@ router.get("/register", (req, res) => {
 })
 
 //REGISTER USER
-router.post("/register", isLoggedIn, (req, res) => {
+router.post("/register", (req, res) => {
     User.register(new User({ username: req.body.username }), req.body.password, function (err, user) {
         if (err) {
             console.log(err);
