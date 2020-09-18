@@ -10,6 +10,11 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const passportLocalMondoose = require("passport-local-mongoose")
 
+//ROUTES
+const commentRoutes = require('./routes/comments');
+const campgroundRoutes = require('./routes/campgrounds');
+const indexRoutes = require("./routes/index")
+
 //Seeding the database
 //seedDB();
 
@@ -44,149 +49,11 @@ app.use(function (req, res, next) {
     next();
 })
 
-//------ROUTES
-
-// LANDING PAGE
-app.get("/", (req, res) => {
-    res.render("landing");
-});
-
-//INDEX
-app.get("/campgrounds", (req, res) => {
-
-    //Retrieving Campgrounds from database
-    Campground.find({}, function (err, campgrounds) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            res.render("campgrounds/index", { campgrounds });
-        }
-    })
-
-});
-
-//CREATE
-app.post("/campgrounds", (req, res) => {
-    let name = req.body.name;
-    let image = req.body.image;
-    let description = req.body.description;
-    let campground = { name, image, description };
-    //  Adding new campground to database
-    Campground.create(campground, function (err, newCampground) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            res.redirect("/campgrounds")
-        }
-    })
-
-});
-
-//NEW 
-app.get("/campgrounds/new", (req, res) => {
-    res.render("campgrounds/new");
-});
-
-//SHOW
-app.get("/campgrounds/:id", function (req, res) {
-    Campground.findById(req.params.id).populate("comments").exec(function (err, foundCampground) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("campgrounds/show", { campground: foundCampground })
-        }
-    })
-})
-
-//NEW Comment
-app.get("/campgrounds/:id/comments/new", isLoggedIn, function (req, res) {
-    Campground.findById(req.params.id, function (err, foundCampground) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("comments/new", { campground: foundCampground })
-        }
-    })
-})
-
-//CREATE Comment
-app.post("/campgrounds/:id/comments", function (req, res) {
-    let comment = req.body.comment;
-    Campground.findById(req.params.id, function (err, campground) {
-        if (err) {
-            console.log(err);
-            res.redirect("/campgrounds")
-        } else {
-            Comment.create(comment, function (err, savedComment) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    campground.comments.push(savedComment)
-                    campground.save();
-                    res.redirect("/campgrounds/" + req.params.id)
-
-                }
-            })
-        }
-    })
-})
-//-------AUTH ROUTES
-
-// Show Register Form
-app.get("/register", (req, res) => {
-    res.render("register");
-})
-
-//REGISTER USER
-app.post("/register", isLoggedIn, (req, res) => {
-    User.register(new User({ username: req.body.username }), req.body.password, function (err, user) {
-        if (err) {
-            console.log(err);
-            return res.render("register")
-        }
-        passport.authenticate("local")(req, res, function () {
-            res.redirect("/campgrounds")
-        })
-    })
-
-})
-
-
-//SHOW LOGIN FORM
-app.get("/login", (req, res) => {
-    res.render("login");
-});
-
-//LOGIN USER
-app.post("/login", passport.authenticate("local", {
-    successRedirect: "/campgrounds",
-    failureRedirect: "/login"
-}), function (req, res) {
-
-})
-
-//LOGOUT USER
-app.get("/logout", function (req, res) {
-    req.logout();
-    res.redirect("/")
-});
-
-//middleware - to add a comment user must be looged in
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login")
-}
+app.use("/", indexRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/comments", commentRoutes);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("YelpCamp Server has started");
 });
 
-
-
-//post(form) : req.body.paramName
-//get(form)  :req.query.paramName
-//get(<a>)   :req.param.paramName
