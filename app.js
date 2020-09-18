@@ -146,6 +146,18 @@ app.post("/register", (req, res) => {
 })
 
 
+//SHOW LOGIN FORM
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+//LOGIN USER
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/campgrounds",
+    failureRedirect: "/login"
+}), function (req, res) {
+
+})
 
 
 app.listen(process.env.PORT || 3000, () => {
