@@ -4,10 +4,14 @@ const app = express();
 const mongoose = require("mongoose");
 const Campground = require("./models/campground");
 const Comment = require("./models/comment")
-const seedDB = require("./seed")
+const User = require("./models/user")
+const seedDB = require("./seed");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const passportLocalMondoose = require("passport-local-mongoose")
 
 //Seeding the database
-seedDB();
+//seedDB();
 
 //Connecting DB
 mongoose.connect('mongodb://localhost:27017/YelpCamp', {
@@ -20,6 +24,20 @@ mongoose.connect('mongodb://localhost:27017/YelpCamp', {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"))
+
+
+//-----PASSPORT CONFIGURATION
+app.use(require("express-session")({
+    //this secret is used to encode and decode sessions. It can be anything.
+    secret: "maow is awesome",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()))
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //------ROUTES
 app.get("/", (req, res) => {
@@ -106,6 +124,28 @@ app.post("/campgrounds/:id/comments", function (req, res) {
         }
     })
 })
+//-------AUTH ROUTES
+
+// Show Register Form
+app.get("/register", (req, res) => {
+    res.render("register");
+})
+
+//REGISTER USER
+app.post("/register", (req, res) => {
+    User.register(new User({ username: req.body.username }), req.body.password, function (err, user) {
+        if (err) {
+            console.log(err);
+            return res.render("register")
+        }
+        passport.authenticate("local")(req, res, function () {
+            res.redirect("/campgrounds")
+        })
+    })
+
+})
+
+
 
 
 app.listen(process.env.PORT || 3000, () => {
