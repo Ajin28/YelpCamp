@@ -40,6 +40,8 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 //------ROUTES
+
+// LANDING PAGE
 app.get("/", (req, res) => {
     res.render("landing");
 });
@@ -93,7 +95,7 @@ app.get("/campgrounds/:id", function (req, res) {
 })
 
 //NEW Comment
-app.get("/campgrounds/:id/comments/new", function (req, res) {
+app.get("/campgrounds/:id/comments/new", isLoggedIn, function (req, res) {
     Campground.findById(req.params.id, function (err, foundCampground) {
         if (err) {
             console.log(err);
@@ -132,7 +134,7 @@ app.get("/register", (req, res) => {
 })
 
 //REGISTER USER
-app.post("/register", (req, res) => {
+app.post("/register", isLoggedIn, (req, res) => {
     User.register(new User({ username: req.body.username }), req.body.password, function (err, user) {
         if (err) {
             console.log(err);
@@ -159,10 +161,25 @@ app.post("/login", passport.authenticate("local", {
 
 })
 
+//LOGOUT USER
+app.get("/logout", function (req, res) {
+    req.logout();
+    res.redirect("/")
+});
+
+//middleware - to add a comment user must be looged in
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/login")
+}
 
 app.listen(process.env.PORT || 3000, () => {
     console.log("YelpCamp Server has started");
 });
+
+
 
 //post(form) : req.body.paramName
 //get(form)  :req.query.paramName
