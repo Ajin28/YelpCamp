@@ -25,7 +25,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"))
 
-
 //-----PASSPORT CONFIGURATION
 app.use(require("express-session")({
     //this secret is used to encode and decode sessions. It can be anything.
@@ -39,6 +38,12 @@ passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// whatever we put in res.local is what's available inside of our template
+app.use(function (req, res, next) {
+    res.locals.currentUser = req.user
+    next();
+})
+
 //------ROUTES
 
 // LANDING PAGE
@@ -48,6 +53,7 @@ app.get("/", (req, res) => {
 
 //INDEX
 app.get("/campgrounds", (req, res) => {
+
     //Retrieving Campgrounds from database
     Campground.find({}, function (err, campgrounds) {
         if (err) {
