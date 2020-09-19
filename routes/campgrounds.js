@@ -58,14 +58,9 @@ router.get("/:id", function (req, res) {
 })
 
 //EDIT 
-router.get("/:id/edit", function (req, res) {
+router.get("/:id/edit", campgroundOwnership, function (req, res) {
     Campground.findById(req.params.id, function (err, foundCampground) {
-        if (err) {
-            console.log(err);
-        } else {
-            res.render("campgrounds/edit", { campground: foundCampground })
-
-        }
+        res.render("campgrounds/edit", { campground: foundCampground })
     })
 })
 
@@ -95,6 +90,24 @@ router.delete("/:id", function (req, res) {
     })
 })
 
+function campgroundOwnership(req, res, next) {
+    if (req.isAuthenticated()) {
+        Campground.findById(req.params.id, function (err, foundCampground) {
+            if (err) {
+                console.log(err)
+                res.redirect("back");
+            } else {
+                if (foundCampground.author.id.equals(req.user._id)) {
+                    next();
+                } else {
+                    res.redirect("back")
+                }
+            }
+        })
+    } else {
+        res.redirect("back")
+    }
+}
 
 //middleware - to add a campground user must be looged in
 function isLoggedIn(req, res, next) {
