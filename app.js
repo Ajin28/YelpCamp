@@ -23,7 +23,8 @@ const indexRoutes = require("./routes/index")
 //Connecting DB
 mongoose.connect('mongodb://localhost:27017/YelpCamp', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 })
     .then(() => console.log('Connected to DB!'))
     .catch(error => console.log(error.message));

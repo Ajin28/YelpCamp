@@ -82,6 +82,17 @@ router.put("/:id", function (req, res) {
     })
 })
 
+//DESTROY
+router.delete("/:id", function (req, res) {
+    Campground.findByIdAndRemove(req.params.id, function (err) {
+        if (err) {
+            console.log(err);
+            res.redirect("/campgrounds")
+        } else {
+            res.redirect("/campgrounds")
+        }
+    })
+})
 
 
 //middleware - to add a campground user must be looged in
