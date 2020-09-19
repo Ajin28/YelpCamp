@@ -84,11 +84,12 @@ router.put("/:id", function (req, res) {
 
 //DESTROY
 router.delete("/:id", function (req, res) {
-    Campground.findByIdAndRemove(req.params.id, function (err) {
+    Campground.findById(req.params.id, function (err, campground) {
         if (err) {
             console.log(err);
             res.redirect("/campgrounds")
         } else {
+            campground.remove().catch(err => { console.log(err) })
             res.redirect("/campgrounds")
         }
     })

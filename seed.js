@@ -1,11 +1,40 @@
 const mongoose = require("mongoose");
+const passport = require("passport");
 const Campground = require("./models/campground")
 const Comment = require("./models/comment");
+const User = require("./models/user")
 
 let comment = {
-    text: "This place is great, but i wish there was internet",
-    author: "Kiwi"
+    text: "This place is great, but i wish there was internet"
 }
+
+var users = [
+    {
+        username: "Jack",
+        password: "jack"
+    },
+    {
+        username: "Jill",
+        password: "jill"
+    },
+    {
+        username: "Jane",
+        password: "jane"
+    },
+    {
+        username: "Jody",
+        password: "jody"
+    },
+    {
+        username: "Jamie",
+        password: "jamie"
+    },
+    {
+        username: "John",
+        password: "john"
+    },
+
+]
 
 var seeds = [
     {
@@ -128,27 +157,46 @@ async function seedDBaa() {
         console.log(emptyCampgrounds);
         let emptyComments = await Comment.deleteMany().exec();
         console.log(emptyComments);
+        let emptyUsers = await User.deleteMany().exec();
+        console.log(emptyUsers);
 
-        // for (const seed of seeds) {
-        //     let addedCampground = await Campground.create(seed);
-        //     console.log("Campground created-----\n" + addedCampground);
 
-        //     let addedComment = await Comment.create(comment);
-        //     console.log("Comment created-----\n" + addedComment);
+        for (let i = 0; i < 6; i++) {
 
-        //     addedCampground.comments.push(addedComment);
-        //     let completeCampground = await addedCampground.save();
-        //     console.log("Comment added to Campground------\n" + completeCampground);
-        // }
-        console.log("It worked!!!!!!!")
+            //Regitering user
+            let registeredUser = await User.register(new User({ username: users[i].username }), users[i].password);
+            //console.log(registeredUser);
+
+            let author = {
+                username: registeredUser.username,
+                id: registeredUser._id
+            }
+
+            //Associating comment and campground with author
+            seeds[i].author = author;
+            comment.author = author;
+            //console.log(seeds[i], comment);
+
+            // Creating campground
+            let addedCampground = await Campground.create(seeds[i]);
+            console.log("Campground created-----\n" + addedCampground);
+
+            //Creating comment
+            let addedComment = await Comment.create(comment);
+            console.log("Comment created-----\n" + addedComment);
+
+            //Associating comment with campground
+            addedCampground.comments.push(addedComment);
+            let completeCampground = await addedCampground.save();
+            console.log("Comment added to Campground------\n" + completeCampground);
+
+        }
     }
     catch (err) {
         console.log(err);
     }
 
 }
-
-
 
 module.exports = seedDBaa;
 
