@@ -54,6 +54,7 @@
                             <p><%= comment.text %> </p>
                         </div>
                         <div class="col-12">
+                            <% if ( currentUser&&comment.author.id.equals(currentUser._id)) { %>
                             <a class="btn btn-sm btn-warning"
                                 href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit
                             </a>
@@ -63,6 +64,8 @@
                                 method="post">
                                 <input class="btn btn-sm btn-danger" type="submit" value="Delete">
                             </form>
+                            <% } %>
+
                         </div>
                     </div>
                     <% }) %>
