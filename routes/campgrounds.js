@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Campground = require("../models/campground");
+const middleware = require("../middleware");
 
+// index.js is a special name that if we require a directory but not a file if I just require middleware it will automatically
+// require the contents of index Dot.
 
 //INDEX
 router.get("/", (req, res) => {
@@ -19,7 +22,7 @@ router.get("/", (req, res) => {
 });
 
 //CREATE
-router.post("/", isLoggedIn, (req, res) => {
+router.post("/", middleware.isLoggedIn, (req, res) => {
     let name = req.body.name;
     let image = req.body.image;
     let description = req.body.description;
@@ -42,7 +45,7 @@ router.post("/", isLoggedIn, (req, res) => {
 });
 
 //NEW 
-router.get("/new", isLoggedIn, (req, res) => {
+router.get("/new", middleware.isLoggedIn, (req, res) => {
     res.render("campgrounds/new");
 });
 
@@ -58,7 +61,7 @@ router.get("/:id", function (req, res) {
 })
 
 //EDIT 
-router.get("/:id/edit", campgroundOwnership, function (req, res) {
+router.get("/:id/edit", middleware.campgroundOwnership, function (req, res) {
     Campground.findById(req.params.id, function (err, foundCampground) {
         res.render("campgrounds/edit", { campground: foundCampground })
     })
@@ -66,7 +69,7 @@ router.get("/:id/edit", campgroundOwnership, function (req, res) {
 
 
 //UPDATE
-router.put("/:id", campgroundOwnership, function (req, res) {
+router.put("/:id", middleware.campgroundOwnership, function (req, res) {
     Campground.findByIdAndUpdate(req.params.id, req.body.campground, function (err, foundCampground) {
         if (err) {
             console.log(err);
@@ -78,7 +81,7 @@ router.put("/:id", campgroundOwnership, function (req, res) {
 })
 
 //DESTROY
-router.delete("/:id", campgroundOwnership, function (req, res) {
+router.delete("/:id", middleware.campgroundOwnership, function (req, res) {
     Campground.findById(req.params.id, function (err, campground) {
         if (err) {
             console.log(err);
@@ -90,31 +93,6 @@ router.delete("/:id", campgroundOwnership, function (req, res) {
     })
 })
 
-function campgroundOwnership(req, res, next) {
-    if (req.isAuthenticated()) {
-        Campground.findById(req.params.id, function (err, foundCampground) {
-            if (err) {
-                console.log(err)
-                res.redirect("back");
-            } else {
-                if (foundCampground.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect("back")
-                }
-            }
-        })
-    } else {
-        res.redirect("back")
-    }
-}
 
-//middleware - to add a campground user must be looged in
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login")
-}
 
 module.exports = router

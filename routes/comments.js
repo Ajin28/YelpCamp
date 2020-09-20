@@ -3,11 +3,10 @@ const router = express.Router({ mergeParams: true });
 //this will merge the params from app.js url and here so we can access id
 const Campground = require("../models/campground");
 const Comment = require("../models/comment");
-const User = require('../models/user');
-const mongoose = require("mongoose")
+const middleware = require("../middleware");
 
 //NEW Comment
-router.get("/new", isLoggedIn, function (req, res) {
+router.get("/new", middleware.isLoggedIn, function (req, res) {
     Campground.findById(req.params.id, function (err, foundCampground) {
         if (err) {
             console.log(err);
@@ -45,7 +44,7 @@ router.post("/", function (req, res) {
 })
 
 // EDIT comment
-router.get("/:comment_id/edit", commentOwnership, function (req, res) {
+router.get("/:comment_id/edit", middleware.commentOwnership, function (req, res) {
     Comment.findById(req.params.comment_id, function (err, foundComment) {
         if (err) {
             console.log(err);
@@ -57,7 +56,7 @@ router.get("/:comment_id/edit", commentOwnership, function (req, res) {
 })
 
 // UPDATE comment
-router.put("/:comment_id", commentOwnership, function (req, res) {
+router.put("/:comment_id", middleware.commentOwnership, function (req, res) {
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, function (err, updatedComment) {
         if (err) {
             console.log(err);
@@ -69,7 +68,7 @@ router.put("/:comment_id", commentOwnership, function (req, res) {
 })
 
 // DELETE comment
-router.delete("/:comment_id", commentOwnership, function (req, res) {
+router.delete("/:comment_id", middleware.commentOwnership, function (req, res) {
     Comment.findByIdAndRemove(req.params.comment_id, function (err) {
         if (err) {
             console.log(err);
@@ -85,33 +84,6 @@ router.delete("/:comment_id", commentOwnership, function (req, res) {
     })
 })
 
-function commentOwnership(req, res, next) {
-    if (req.isAuthenticated()) {
-        Comment.findById(req.params.comment_id, function (err, foundComment) {
-            if (err) {
-                console.log(err)
-                res.redirect("back");
-            } else {
-                if (foundComment.author.id.equals(req.user._id)) {
-                    next();
-                } else {
-                    res.redirect("back")
-                }
-            }
-        })
-    } else {
-        res.redirect("back")
-    }
-}
 
-//middleware - to add a comment user must be looged in
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-
-
-    res.redirect("/login")
-}
 
 module.exports = router
