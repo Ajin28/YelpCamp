@@ -27,10 +27,12 @@
                             <%= campground.author.username %>
                         </em>
                     </p>
+                    <% if ( currentUser&&campground.author.id.equals(currentUser._id)) { %>
                     <a class="btn btn-warning" href="/campgrounds/<%= campground._id  %>/edit">Edit</a>
                     <form class="d-inline" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="post">
                         <button class="btn btn-danger">Delete</button>
                     </form>
+                    <% } %>
                 </div>
 
                 <div class="card-footer">
