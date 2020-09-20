@@ -4,7 +4,7 @@ const router = express.Router({ mergeParams: true });
 const Campground = require("../models/campground");
 const Comment = require("../models/comment");
 const User = require('../models/user');
-
+const mongoose = require("mongoose")
 
 //NEW Comment
 router.get("/new", isLoggedIn, function (req, res) {
@@ -69,7 +69,21 @@ router.put("/:comment_id", function (req, res) {
 })
 
 // DELETE comment
-
+router.delete("/:comment_id", function (req, res) {
+    Comment.findByIdAndRemove(req.params.comment_id, function (err) {
+        if (err) {
+            console.log(err);
+            //res.redirect("back")
+        } else {
+            Campground.findById(req.params.id, function (err, campground) {
+                campground.comments.pull(req.params.comment_id)//can also use .remove its an alias
+                campground.save();
+            })
+            console.log("deletes")
+            res.redirect("/campgrounds/" + req.params.id)
+        }
+    })
+})
 
 
 //middleware - to add a comment user must be looged in
@@ -77,6 +91,8 @@ function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
+
+
     res.redirect("/login")
 }
 
