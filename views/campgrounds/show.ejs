@@ -53,6 +53,13 @@
                             <span class="float-right">10 days ago</span>
                             <p><%= comment.text %> </p>
                         </div>
+                        <div class="col-12">
+                            <a class="btn btn-sm btn-warning"
+                                href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit">Edit</a>
+                            <a class="btn btn-sm btn-danger"
+                                href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/delete">Delete</a>
+
+                        </div>
                     </div>
                     <% }) %>
                 </div>
