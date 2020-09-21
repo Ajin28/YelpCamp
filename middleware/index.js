@@ -25,6 +25,9 @@ middlewareObj.isLoggedIn = function (req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
+    // Inside flash we pass in a key and a value and we do that before we redirect.
+    // It's really important if I put this line after we redirect. It won't work.
+    req.flash("error", "Please login first")
     res.redirect("/login")
 }
 

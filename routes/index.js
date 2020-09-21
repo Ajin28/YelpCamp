@@ -30,7 +30,7 @@ router.post("/register", (req, res) => {
 
 //SHOW LOGIN FORM
 router.get("/login", (req, res) => {
-    res.render("login");
+    res.render("login", { message: req.flash("error") });
 });
 
 //LOGIN USER
