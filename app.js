@@ -51,6 +51,8 @@ passport.deserializeUser(User.deserializeUser());
 // whatever we put in res.local is what's available inside of our template
 app.use(function (req, res, next) {
     res.locals.currentUser = req.user
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success")
     next();
 })
 

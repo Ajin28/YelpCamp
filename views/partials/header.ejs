@@ -42,3 +42,17 @@
 
         </div>
     </nav>
+    <div class="container">
+        <div class="row">
+            <% if (error && error.length>0) { %>
+            <div class="col-12">
+                <div class=" alert alert-danger mt-3" role="alert"><%= error %> </div>
+            </div>
+            <% } %>
+            <% if (success && success.length>0) { %>
+            <div class="col-12">
+                <div class=" alert alert-success mt-3" role="alert"><%= success %> </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
