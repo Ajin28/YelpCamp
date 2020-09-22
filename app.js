@@ -21,7 +21,7 @@ const indexRoutes = require("./routes/index")
 //seedDB();
 
 //Connecting DB
-mongoose.connect('mongodb://localhost:27017/YelpCamp', {
+mongoose.connect(process.env.DB_LINK || 'mongodb://localhost:27017/YelpCamp', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
