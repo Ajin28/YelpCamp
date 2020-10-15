@@ -3,6 +3,43 @@ hr {
  margin-bottom: 0.75rem;
 }
 
+nav {
+ background-color: rgb(32, 2, 82);
+}
+
 .btn {
  color: white;
+ background-color: #35087cda;
+ border: none;
+}
+
+.btn:hover {
+ background-color: rgba(0, 0, 0, 0.712);
+}
+
+#chatbtn {
+ z-index: 3;
+ position: fixed;
+ bottom: 0;
+ right: 0;
+ margin-bottom: 0;
+ margin-right: 3%;
+ background-color: rgb(32, 2, 82);
+}
+
+#chatbtn :hover {
+ color: white;
+}
+
+#chat {
+ width: 400px;
+ height: 400px;
+ z-index: 3;
+ position: fixed;
+ bottom: 0;
+ right: 0;
+ margin-bottom: 6%;
+ margin-right: 3%;
+ border-radius: 2%;
+ border: solid rgba(0, 0, 0, 0.24) 3px;
 }

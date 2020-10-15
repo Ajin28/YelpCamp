@@ -31,7 +31,21 @@
         </div>
         <% }) %>
 
+        <%  if (token) { %>
+        <iframe class="collapse" id="chat"
+            src="<%= "https://webchat.botframework.com/embed/agreeya-bot?t=" +token %> "></iframe>
+        <% } %>
+
+
+        <a id="chatbtn" class="btn btn-primary" data-toggle="collapse" href="#chat" role="button" aria-expanded="false"
+            aria-controls="collapseExample">
+            <span class="px-3">Chat-Bot</span>
+        </a>
+
     </div>
 
 </div>
+
+
+
 <%- include("../partials/footer")  %>

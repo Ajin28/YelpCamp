@@ -11,6 +11,7 @@ const LocalStrategy = require("passport-local");
 const passportLocalMondoose = require("passport-local-mongoose")
 const methodOverride = require("method-override");
 const flash = require("connect-flash")
+const fetch = require("node-fetch");
 
 //ROUTES
 const commentRoutes = require('./routes/comments');
@@ -18,7 +19,7 @@ const campgroundRoutes = require('./routes/campgrounds');
 const indexRoutes = require("./routes/index")
 
 //Seeding the database
-seedDB();
+//seedDB();
 
 //Connecting DB
 mongoose.connect(process.env.DB_LINK || 'mongodb://localhost:27017/YelpCamp', {
@@ -49,18 +50,41 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // whatever we put in res.local is what's available inside of our template
-app.use(function (req, res, next) {
-    res.locals.currentUser = req.user
-    res.locals.error = req.flash("error");
-    res.locals.success = req.flash("success")
-    next();
+// app.use(function (req, res, next) {
+//     res.locals.currentUser = req.user
+//     res.locals.error = req.flash("error");
+//     res.locals.success = req.flash("success")
+//     next();
+// })
+
+
+app.use(async function (req, res, next) {
+    try {
+        let response = await fetch("https://generateaybottoken.azurewebsites.net/api/GenerateToken?code=a0NyNJETKtQZuxkDo1b8mRixsjVB2N4pJVtfUw4DdhmNvalBHmTRMg==");
+        let token = await response.json();
+        res.locals.token = token;
+        res.locals.currentUser = req.user
+        res.locals.error = req.flash("error");
+        res.locals.success = req.flash("success");
+    }
+    catch (e) {
+        //console.log(e);
+        res.locals.token = null;
+        res.locals.currentUser = req.user
+        res.locals.error = req.flash("error");
+        res.locals.success = req.flash("success");
+    }
+    finally {
+        next();
+    }
+
 })
 
 app.use("/", indexRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3002, () => {
     console.log("YelpCamp Server has started");
 });
 
