@@ -60,6 +60,7 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(async function (req, res, next) {
     try {
+        console.log(req);
         let response = await fetch("https://aybotazurefunctionapp.azurewebsites.net/api/GenerateAYBotToken?code=DjpE11lNWCsOaKN1OZIUjOHhAPb/4ze6JdCNqGS2Qcddp5VSLeESdQ==");
         let token = await response.json();
         //console.log(token);
