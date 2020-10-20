@@ -60,15 +60,18 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(async function (req, res, next) {
     try {
-        let response = await fetch("https://generateaybottoken.azurewebsites.net/api/GenerateToken?code=a0NyNJETKtQZuxkDo1b8mRixsjVB2N4pJVtfUw4DdhmNvalBHmTRMg==");
+        let response = await fetch("https://aybotazurefunctionapp.azurewebsites.net/api/GenerateAYBotToken?code=DjpE11lNWCsOaKN1OZIUjOHhAPb/4ze6JdCNqGS2Qcddp5VSLeESdQ==");
         let token = await response.json();
-        res.locals.token = token;
+        //console.log(token);
+        //console.log(typeof token);
+        res.locals.token = token.source;
         res.locals.currentUser = req.user
         res.locals.error = req.flash("error");
         res.locals.success = req.flash("success");
     }
     catch (e) {
         //console.log(e);
+
         res.locals.token = null;
         res.locals.currentUser = req.user
         res.locals.error = req.flash("error");
