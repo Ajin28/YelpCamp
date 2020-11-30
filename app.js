@@ -57,11 +57,14 @@ passport.deserializeUser(User.deserializeUser());
 //     next();
 // })
 
-
 app.use(async function (req, res, next) {
     try {
         console.log(req);
-        let response = await fetch("https://aybotazurefunctionapp.azurewebsites.net/api/GenerateAYBotToken?code=DjpE11lNWCsOaKN1OZIUjOHhAPb/4ze6JdCNqGS2Qcddp5VSLeESdQ==");
+        let response = await fetch("https://webchat.botframework.com/api/tokens", {
+            headers: {
+                Authorization: "BotConnector " + process.env.KEY
+            }
+        });
         let token = await response.json();
         //console.log(token);
         //console.log(typeof token);
