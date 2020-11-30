@@ -62,19 +62,20 @@ app.use(async function (req, res, next) {
         console.log(req);
         let response = await fetch("https://webchat.botframework.com/api/tokens", {
             headers: {
-                Authorization: "BotConnector " + process.env.KEY
+                Authorization: "BotConnector " + "Tbtz8Kphe0c.feUTRehHfrnqR0anr4tm6AZzudqEy68m4EtiKWtMUGA"
             }
         });
         let token = await response.json();
+        token = "https://webchat.botframework.com/embed/public-bot-trial?t=" + token
         //console.log(token);
         //console.log(typeof token);
-        res.locals.token = token.source;
+        res.locals.token = token;
         res.locals.currentUser = req.user
         res.locals.error = req.flash("error");
         res.locals.success = req.flash("success");
     }
     catch (e) {
-        //console.log(e);
+        console.log(e);
 
         res.locals.token = null;
         res.locals.currentUser = req.user
