@@ -62,7 +62,7 @@ app.use(async function (req, res, next) {
         console.log(req);
         let response = await fetch("https://webchat.botframework.com/api/tokens", {
             headers: {
-                Authorization: "BotConnector " + "Tbtz8Kphe0c.feUTRehHfrnqR0anr4tm6AZzudqEy68m4EtiKWtMUGA"
+                Authorization: "BotConnector " + process.env.DB_LINK
             }
         });
         let token = await response.json();
